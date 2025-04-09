@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}- Quiz{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <h1 class="mb-4"><i class="fas fa-question-circle me-2"></i>Generate Quiz</h1>
+        
+        <!-- Instructions Card -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-info-circle me-2"></i>How it works</h5>
+                <p class="card-text">Upload your study materials or enter text directly, and our AI will generate quiz questions to test your knowledge.</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-lightbulb me-2"></i>You can customize the number of questions and difficulty level.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Input Form -->
+        {% if not quiz %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Create Quiz</h5>
+                <form action="/quiz/generate" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Upload study material (optional)</label>
+                        <input type="file" class="form-control" id="file" name="file" accept=".pdf,.txt,.docx">
+                        <div class="form-text">Supported formats: PDF, TXT, DOCX</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Or enter text directly</label>
+                        <textarea class="form-control" id="content" name="content" rows="5" placeholder="Paste your study material here..."></textarea>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="question_count" class="form-label">Number of questions</label>
+                            <select class="form-select" id="question_count" name="question_count">
+                                <option value="3">3 questions</option>
+                                <option value="5" selected>5 questions</option>
+                                <option value="10">10 questions</option>
+                                <option value="15">15 questions</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="difficulty" class="form-label">Difficulty level</label>
+                            <select class="form-select" id="difficulty" name="difficulty">
+                                <option value="easy">Easy</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-magic me-1"></i> Generate Quiz
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Quiz Results (if available) -->
+        {% if quiz %}
+        <div class="card mb-3">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0"><i class="fas fa-tasks me-2"></i>Quiz</h5>
+            </div>
+            <div class="card-body">
+                <form id="quiz-form">
+                    {% for question in quiz.questions %}
+                    <div class="question-container mb-4">
+                        <h5 class="mb-3">{{ loop.index }}. {{ question.question }}</h5>
+                        
+                        {% for option in question.options %}
+                        <div class="form-check mb-2">
+                            <input class="form-check-input question-option" 
+                                   type="radio" 
+                                   name="question-{{ loop.parent.index0 }}" 
+                                   id="q{{ loop.parent.index0 }}-option{{ loop.index0 }}" 
+                                   value="{{ option }}" 
+                                   data-correct="{{ question.correct_answer }}">
+                            <label class="form-check-label" for="q{{ loop.parent.index0 }}-option{{ loop.index0 }}">
+                                {{ option }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                        
+                        <div class="explanation mt-2 d-none">
+                            <div class="alert alert-info">
+                                <strong>Explanation:</strong> {{ question.explanation }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" id="check-answers" class="btn btn-primary">
+                            <i class="fas fa-check-circle me-1"></i> Check Answers
+                        </button>
+                        <button type="button" id="reset-quiz" class="btn btn-secondary">
+                            <i class="fas fa-redo me-1"></i> Reset
+                        </button>
+                        <a href="/quiz" class="btn btn-success">
+                            <i class="fas fa-plus me-1"></i> New Quiz
+                        </a>
+                    </div>
+                </form>
+                
+                <div id="quiz-results" class="mt-4 d-none">
+                    <div class="alert alert-primary">
+                        <h5 class="mb-1">Quiz Results</h5>
+                        <p id="score-display" class="mb-0">You got <span id="correct-count">0</span> out of <span id="total-count">{{ quiz.questions|length }}</span> questions correct.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if quiz %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkAnswersBtn = document.getElementById('check-answers');
+        const resetQuizBtn = document.getElementById('reset-quiz');
+        const quizResults = document.getElementById('quiz-results');
+        const correctCountDisplay = document.getElementById('correct-count');
+        const questions = document.querySelectorAll('.question-container');
+        const totalQuestions = {{ quiz.questions|length }};
+        
+        // Check answers when button is clicked
+        checkAnswersBtn.addEventListener('click', function() {
+            let correctCount = 0;
+            
+            // Check each question
+            questions.forEach((questionContainer, index) => {
+                const selectedOption = document.querySelector(`input[name="question-${index}"]:checked`);
+                const explanation = questionContainer.querySelector('.explanation');
+                
+                // If an option is selected
+                if (selectedOption) {
+                    const userAnswer = selectedOption.value;
+                    const correctAnswer = selectedOption.dataset.correct;
+                    
+                    // Mark as correct or incorrect
+                    if (userAnswer === correctAnswer) {
+                        correctCount++;
+                        selectedOption.parentElement.classList.add('text-success', 'fw-bold');
+                    } else {
+                        selectedOption.parentElement.classList.add('text-danger', 'text-decoration-line-through');
+                        
+                        // Highlight the correct answer
+                        const allOptions = questionContainer.querySelectorAll('.question-option');
+                        allOptions.forEach(option => {
+                            if (option.value === correctAnswer) {
+                                option.parentElement.classList.add('text-success', 'fw-bold');
+                            }
+                        });
+                    }
+                    
+                    // Show explanation
+                    explanation.classList.remove('d-none');
+                }
+            });
+            
+            // Update and show results
+            correctCountDisplay.textContent = correctCount;
+            quizResults.classList.remove('d-none');
+            
+            // Disable inputs after checking
+            document.querySelectorAll('.question-option').forEach(input => {
+                input.disabled = true;
+            });
+            
+            // Hide check button
+            checkAnswersBtn.classList.add('d-none');
+        });
+        
+        // Reset quiz when button is clicked
+        resetQuizBtn.addEventListener('click', function() {
+            // Clear all selections
+            document.querySelectorAll('.question-option').forEach(input => {
+                input.checked = false;
+                input.disabled = false;
+                input.parentElement.classList.remove('text-success', 'text-danger', 'fw-bold', 'text-decoration-line-through');
+            });
+            
+            // Hide all explanations
+            document.querySelectorAll('.explanation').forEach(explanation => {
+                explanation.classList.add('d-none');
+            });
+            
+            // Hide results
+            quizResults.classList.add('d-none');
+            
+            // Show check button
+            checkAnswersBtn.classList.remove('d-none');
+        });
+    });
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}- Summarize{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <h1 class="mb-4"><i class="fas fa-compress-alt me-2"></i>Summarize Study Materials</h1>
+        
+        <!-- Instructions Card -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-info-circle me-2"></i>How it works</h5>
+                <p class="card-text">Upload your study materials and our AI will generate a concise summary that captures the key points and important concepts.</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-lightbulb me-2"></i>Supported file formats: PDF, TXT, DOCX
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-7">
+                <!-- Upload Form -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Upload Study Material</h5>
+                        <form action="/summarize/process" method="POST" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="file" class="form-label">Select a file to summarize</label>
+                                <input type="file" class="form-control" id="file" name="file" required accept=".pdf,.txt,.docx">
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-magic me-1"></i> Generate Summary
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-5">
+                <!-- Recent Summaries -->
+                <div class="card mb-4">
+                    <div class="card-header bg-dark">
+                        <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Summaries</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        {% if recent_summaries %}
+                            <div class="list-group list-group-flush">
+                                {% for summary in recent_summaries %}
+                                    <a href="{{ url_for('summarize.view_summary', summary_id=summary._id) }}" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">{{ summary.title }}</h6>
+                                            <small>{{ summary.created_at.strftime('%Y-%m-%d') }}</small>
+                                        </div>
+                                        <small class="text-muted">{{ summary.file_type.upper() }} - {{ summary.word_count }} words</small>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="{{ url_for('summarize.summary_history') }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-list me-1"></i> View All Summaries
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="p-3 text-center">
+                                <p class="text-muted mb-0">No recent summaries</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Summary Results (if available) -->
+        {% if summary %}
+        <div class="card">
+            <div class="card-header bg-dark d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-file-alt me-2"></i>Summary for: {{ filename }}
+                </h5>
+                <div>
+                    {% if summary_id is defined %}
+                    <a href="{{ url_for('summarize.view_summary', summary_id=summary_id) }}" class="btn btn-sm btn-outline-info me-2" title="View full details">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    {% endif %}
+                    <button id="copy-summary" class="btn btn-sm btn-outline-light" title="Copy summary to clipboard">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="summary-content" class="summary-container">
+                    {{ summary | safe | replace('\n', '<br>') }}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Copy summary to clipboard functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const copyButton = document.getElementById('copy-summary');
+        if (copyButton) {
+            copyButton.addEventListener('click', function() {
+                const summaryContent = document.getElementById('summary-content').innerText;
+                
+                navigator.clipboard.writeText(summaryContent).then(() => {
+                    // Change button text temporarily to provide feedback
+                    const originalHTML = copyButton.innerHTML;
+                    copyButton.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    copyButton.classList.add('btn-success');
+                    copyButton.classList.remove('btn-outline-light');
+                    
+                    setTimeout(() => {
+                        copyButton.innerHTML = originalHTML;
+                        copyButton.classList.remove('btn-success');
+                        copyButton.classList.add('btn-outline-light');
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                    alert('Failed to copy summary to clipboard');
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

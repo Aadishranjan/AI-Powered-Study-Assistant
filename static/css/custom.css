@@ -1,0 +1,63 @@
+/* Custom styling for the Study Assistant application */
+
+/* Summary and explanation containers for better readability */
+.summary-container,
+.explanation-container {
+    line-height: 1.6;
+    font-size: 1.05rem;
+}
+
+/* Quiz styling */
+.question-container {
+    padding: 1rem;
+    border-radius: 0.25rem;
+    background-color: rgba(33, 37, 41, 0.3);
+    border-left: 4px solid var(--bs-primary);
+}
+
+.explanation {
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Add some space at the bottom of the page for better scrolling experience */
+body {
+    padding-bottom: 2rem;
+}
+
+/* Custom card styling for the feature cards on the home page */
+.card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+}
+
+/* Make sure file inputs have consistent styling */
+input[type="file"] {
+    padding: 0.375rem 0.75rem;
+}
+
+/* Ensure proper display of code blocks in summaries and explanations */
+.summary-container pre,
+.explanation-container pre {
+    padding: 1rem;
+    border-radius: 0.25rem;
+    background-color: #2d2d2d;
+    color: #f8f9fa;
+    overflow-x: auto;
+}
+
+/* Style for code blocks or technical terms within text */
+.summary-container code,
+.explanation-container code {
+    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--bs-info);
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.2rem;
+}

@@ -1,0 +1,8 @@
+Flask
+flask_pymongo
+requests
+google-generativeai
+grpcio
+Werkzeug
+python-dotenv
+PyPDF2

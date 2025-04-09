@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}- View Summary{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <h1 class="mb-4"><i class="fas fa-file-alt me-2"></i>Summary Details</h1>
+        
+        <!-- Navigation buttons -->
+        <div class="mb-4">
+            <a href="{{ url_for('summarize.summary_history') }}" class="btn btn-outline-primary me-2">
+                <i class="fas fa-arrow-left me-1"></i> Back to History
+            </a>
+            <a href="{{ url_for('summarize.summarize_page') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-plus me-1"></i> New Summary
+            </a>
+        </div>
+        
+        <!-- Summary Info Card -->
+        <div class="card mb-4">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Summary Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>File Name:</strong> {{ filename }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Created:</strong> {{ created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Summary Content -->
+        <div class="card mb-4">
+            <div class="card-header bg-dark d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-compress-alt me-2"></i>Summary
+                </h5>
+                <button id="copy-summary" class="btn btn-sm btn-outline-light" title="Copy summary to clipboard">
+                    <i class="fas fa-copy"></i>
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="summary-content" class="summary-container">
+                    {{ summary | safe | replace('\n', '<br>') }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Original Content (collapsed by default) -->
+        <div class="card">
+            <div class="card-header bg-dark" data-bs-toggle="collapse" data-bs-target="#originalContent" aria-expanded="false" style="cursor: pointer;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-alt me-2"></i>Original Content
+                    </h5>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            <div id="originalContent" class="collapse">
+                <div class="card-body">
+                    <div class="original-content-container" style="max-height: 500px; overflow-y: auto;">
+                        {{ original_content | safe | replace('\n', '<br>') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Copy summary to clipboard functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const copyButton = document.getElementById('copy-summary');
+        if (copyButton) {
+            copyButton.addEventListener('click', function() {
+                const summaryContent = document.getElementById('summary-content').innerText;
+                
+                navigator.clipboard.writeText(summaryContent).then(() => {
+                    // Change button text temporarily to provide feedback
+                    const originalHTML = copyButton.innerHTML;
+                    copyButton.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    copyButton.classList.add('btn-success');
+                    copyButton.classList.remove('btn-outline-light');
+                    
+                    setTimeout(() => {
+                        copyButton.innerHTML = originalHTML;
+                        copyButton.classList.remove('btn-success');
+                        copyButton.classList.add('btn-outline-light');
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                    alert('Failed to copy summary to clipboard');
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

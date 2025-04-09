@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}- AI-Powered Study Tools{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="text-center mb-5">
+            <h1 class="display-4 mb-3">AI-Powered Study Assistant</h1>
+            <p class="lead">Enhance your learning experience with our Gemini AI-powered study tools</p>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Summarize Card -->
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-compress-alt fa-3x mb-3 text-primary"></i>
+                        <h3 class="card-title">Summarize</h3>
+                        <p class="card-text">Upload your study materials and get concise summaries that capture the essential information.</p>
+                        <a href="/summarize" class="btn btn-primary mt-2">
+                            <i class="fas fa-arrow-right me-1"></i> Get Started
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quiz Card -->
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-question-circle fa-3x mb-3 text-success"></i>
+                        <h3 class="card-title">Quiz</h3>
+                        <p class="card-text">Generate interactive quizzes based on your materials to test your knowledge and reinforce learning.</p>
+                        <a href="/quiz" class="btn btn-success mt-2">
+                            <i class="fas fa-arrow-right me-1"></i> Get Started
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Explain Card -->
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-info-circle fa-3x mb-3 text-info"></i>
+                        <h3 class="card-title">Explain</h3>
+                        <p class="card-text">Get detailed explanations of complex topics broken down into easy-to-understand concepts.</p>
+                        <a href="/explain" class="btn btn-info mt-2">
+                            <i class="fas fa-arrow-right me-1"></i> Get Started
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- How It Works Section -->
+        <div class="mt-5 pt-3">
+            <h2 class="text-center mb-4">How It Works</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card bg-dark">
+                        <div class="card-body text-center">
+                            <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                                <i class="fas fa-upload fa-2x text-white"></i>
+                            </div>
+                            <h4>1. Upload Content</h4>
+                            <p>Upload your notes, documents, or study materials in supported formats (PDF, TXT, DOCX).</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card bg-dark">
+                        <div class="card-body text-center">
+                            <div class="rounded-circle bg-success d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                                <i class="fas fa-cogs fa-2x text-white"></i>
+                            </div>
+                            <h4>2. AI Processing</h4>
+                            <p>Our Gemini AI analyzes your content to extract key information and understand core concepts.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card bg-dark">
+                        <div class="card-body text-center">
+                            <div class="rounded-circle bg-info d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                                <i class="fas fa-lightbulb fa-2x text-white"></i>
+                            </div>
+                            <h4>3. Get Results</h4>
+                            <p>Receive summaries, quizzes, or explanations based on your materials to enhance your learning.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Features Section -->
+        <div class="mt-5 pt-3">
+            <h2 class="text-center mb-4">Features</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-group mb-4">
+                        <li class="list-group-item bg-dark">
+                            <i class="fas fa-check-circle text-success me-2"></i> Generate concise summaries of complex content
+                        </li>
+                        <li class="list-group-item bg-dark">
+                            <i class="fas fa-check-circle text-success me-2"></i> Create customized quizzes with explanations
+                        </li>
+                        <li class="list-group-item bg-dark">
+                            <i class="fas fa-check-circle text-success me-2"></i> Get detailed explanations of difficult concepts
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-group">
+                        <li class="list-group-item bg-dark">
+                            <i class="fas fa-check-circle text-success me-2"></i> Support for multiple file formats (PDF, TXT, DOCX)
+                        </li>
+                        <li class="list-group-item bg-dark">
+                            <i class="fas fa-check-circle text-success me-2"></i> Responsive design for desktop and mobile
+                        </li>
+                        <li class="list-group-item bg-dark">
+                            <i class="fas fa-check-circle text-success me-2"></i> Powered by Google's Gemini AI for high-quality results
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

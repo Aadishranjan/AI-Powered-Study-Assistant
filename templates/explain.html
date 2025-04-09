@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}- Explain{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <h1 class="mb-4"><i class="fas fa-info-circle me-2"></i>Explain Concepts</h1>
+        
+        <!-- Instructions Card -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-info-circle me-2"></i>How it works</h5>
+                <p class="card-text">Enter a topic or concept you'd like explained. Optionally upload study material or enter text to provide context for more tailored explanations.</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-lightbulb me-2"></i>The more specific your topic, the more detailed the explanation will be.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Input Form -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Get Explanation</h5>
+                <form action="/explain/process" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="topic" class="form-label">Topic or Concept <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="topic" name="topic" required 
+                               placeholder="Enter the topic or concept you want explained (e.g., 'Photosynthesis', 'The Law of Supply and Demand')">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Context Material (optional)</label>
+                        <input type="file" class="form-control" id="file" name="file" accept=".pdf,.txt,.docx">
+                        <div class="form-text">Upload relevant study material to provide context for a more tailored explanation.</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="context" class="form-label">Or enter context directly (optional)</label>
+                        <textarea class="form-control" id="context" name="context" rows="4" 
+                                  placeholder="Paste text that provides context for your topic..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-info">
+                        <i class="fas fa-magic me-1"></i> Generate Explanation
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Explanation Results (if available) -->
+        {% if explanation %}
+        <div class="card">
+            <div class="card-header bg-dark d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>Explanation: {{ topic }}
+                </h5>
+                <button id="copy-explanation" class="btn btn-sm btn-outline-light" title="Copy explanation to clipboard">
+                    <i class="fas fa-copy"></i>
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="explanation-content" class="explanation-container">
+                    {{ explanation | safe | replace('\n', '<br>') }}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Copy explanation to clipboard functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const copyButton = document.getElementById('copy-explanation');
+        if (copyButton) {
+            copyButton.addEventListener('click', function() {
+                const explanationContent = document.getElementById('explanation-content').innerText;
+                
+                navigator.clipboard.writeText(explanationContent).then(() => {
+                    // Change button text temporarily to provide feedback
+                    const originalHTML = copyButton.innerHTML;
+                    copyButton.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    copyButton.classList.add('btn-success');
+                    copyButton.classList.remove('btn-outline-light');
+                    
+                    setTimeout(() => {
+                        copyButton.innerHTML = originalHTML;
+                        copyButton.classList.remove('btn-success');
+                        copyButton.classList.add('btn-outline-light');
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                    alert('Failed to copy explanation to clipboard');
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}
